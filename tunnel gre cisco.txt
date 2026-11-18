@@ -1,0 +1,69 @@
+TUNNEL GRE
+adalah jalan cadangan yang lokasinya jauh misalnya kita mau ngirim
+barang dari jogja ke jakarta dan misalnya kalo jalan biasa biasanya macet
+dan lama jadi kita mengunnakan tunnel atau jalan pintas
+
+R-INTERNET
+en
+conf t
+host INTERNET
+interface g0/1
+ip add 10.10.10.1 255.255.255.240
+no sh
+interface g0/1
+ip add 20.20.20.1 255.255.255.240
+route eigrp 10
+net 10.10.10.0
+net 192.168.10.0
+no au
+
+
+
+
+
+
+R-JOGJA
+en
+conf t
+host JOGJA
+interface g0/0
+ip add 10.10.10.2 255.255.255.240
+no sh
+interface g0/1
+ip add 192.168.10.1 255.255.255.240
+no sh
+route eigrp 10
+net 10.10.10.0
+net 20.20.20.0
+no au
+int tunnel0
+ip add 11.11.11.1 255.255.255.240 atau sesuai prefix
+tunnel source sesuai interface kalo ak g0/0
+tunnel destination 20.20.20.2
+ip route 192.168.20.0 255.255.255.240 11.11.11.2
+
+
+
+R-JAKARTA
+en
+conf t
+host JAKARTA
+interface g0/0
+ip add 20.20.20.2 255.255.255.240
+no sh
+interface g0/1
+ip add 192.168.20.1 255.255.255.240
+no sh
+route eigrp 10
+net 20.20.20.0
+net 192.168.20.0
+no au
+int tunnel0
+ip add 11.11.11.2 255.255.255.240
+tunnel source g0/0
+tunnel destination 10.10.10.2
+ip route 192.168.10.0 255.255.255.240 11.11.11.1
+
+
+YANG TUNNEL SOURCE ITU SESUAI INTERFACE YANG MENGARAH KE ROUTER INTERNET
+misalnya g0/0 kalo gak g0/1 kalo aku g0/0 kalo kalian bodoamat
